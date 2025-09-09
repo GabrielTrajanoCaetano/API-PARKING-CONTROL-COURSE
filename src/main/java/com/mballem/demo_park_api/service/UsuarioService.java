@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.mballem.demo_park_api.repository.UsuarioRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class UsuarioService {
@@ -32,5 +34,11 @@ public class UsuarioService {
         return user;
 
 
+    }
+    @Transactional(readOnly = true)
+    public List<Usuario> buscarTodos() {
+        List<Usuario> user = usuarioRepository.findAll();
+
+        return user;
     }
 }
