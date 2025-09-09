@@ -22,7 +22,13 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getId(@PathVariable Long id){
-        Usuario user = usuarioService.buscarPorUsuario(id);
+        Usuario user = usuarioService.buscarPorId(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Usuario> updatePassword(@PathVariable Long id, @RequestBody Usuario usuario){
+        Usuario user = usuarioService.editarSenha(id, usuario.getPassword());
+        return ResponseEntity.ok(user);
     }
 }
