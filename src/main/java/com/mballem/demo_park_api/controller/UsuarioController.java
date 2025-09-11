@@ -2,6 +2,7 @@ package com.mballem.demo_park_api.controller;
 
 import com.mballem.demo_park_api.controller.DTO.UsuarioCreateDto;
 import com.mballem.demo_park_api.controller.DTO.UsuarioResponseDto;
+import com.mballem.demo_park_api.controller.DTO.UsuarioSenhaDto;
 import com.mballem.demo_park_api.controller.DTO.mapper.UsuarioMapper;
 import com.mballem.demo_park_api.entity.Usuario;
 import com.mballem.demo_park_api.service.UsuarioService;
@@ -26,15 +27,15 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getId(@PathVariable Long id){
+    public ResponseEntity<UsuarioResponseDto> getId(@PathVariable Long id){
         Usuario user = usuarioService.buscarPorId(id);
-        return ResponseEntity.status(HttpStatus.OK).body(user);
+        return ResponseEntity.status(HttpStatus.OK).body(UsuarioMapper.toDto(user));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Usuario> updatePassword(@PathVariable Long id, @RequestBody Usuario usuario){
-        Usuario user = usuarioService.editarSenha(id, usuario.getPassword());
-        return ResponseEntity.ok(user);
+    public ResponseEntity<String> updatePassword(@PathVariable Long id, @RequestBody UsuarioSenhaDto dto){
+        Usuario user = usuarioService.editarSenha(id, dto.getSenhaAtual(), dto.getNovaSenha(), dto.getConfirmaSenha());
+        return ResponseEntity.ok().body("Senha alterada com sucesso");
     }
 
     @GetMapping
