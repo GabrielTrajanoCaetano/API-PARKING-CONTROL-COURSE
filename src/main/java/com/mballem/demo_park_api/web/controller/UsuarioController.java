@@ -1,9 +1,9 @@
-package com.mballem.demo_park_api.controller;
+package com.mballem.demo_park_api.web.controller;
 
-import com.mballem.demo_park_api.controller.DTO.UsuarioCreateDto;
-import com.mballem.demo_park_api.controller.DTO.UsuarioResponseDto;
-import com.mballem.demo_park_api.controller.DTO.UsuarioSenhaDto;
-import com.mballem.demo_park_api.controller.DTO.mapper.UsuarioMapper;
+import com.mballem.demo_park_api.web.dto.UsuarioCreateDto;
+import com.mballem.demo_park_api.web.dto.UsuarioResponseDto;
+import com.mballem.demo_park_api.web.dto.UsuarioSenhaDto;
+import com.mballem.demo_park_api.web.dto.mapper.UsuarioMapper;
 import com.mballem.demo_park_api.entity.Usuario;
 import com.mballem.demo_park_api.service.UsuarioService;
 import jakarta.validation.Valid;

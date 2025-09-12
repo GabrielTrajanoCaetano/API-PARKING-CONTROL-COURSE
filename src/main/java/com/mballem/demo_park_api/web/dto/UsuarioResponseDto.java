@@ -1,4 +1,4 @@
-package com.mballem.demo_park_api.controller.DTO;
+package com.mballem.demo_park_api.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

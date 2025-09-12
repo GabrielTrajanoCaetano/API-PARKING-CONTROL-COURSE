@@ -1,7 +1,7 @@
-package com.mballem.demo_park_api.controller.DTO.mapper;
+package com.mballem.demo_park_api.web.dto.mapper;
 
-import com.mballem.demo_park_api.controller.DTO.UsuarioCreateDto;
-import com.mballem.demo_park_api.controller.DTO.UsuarioResponseDto;
+import com.mballem.demo_park_api.web.dto.UsuarioCreateDto;
+import com.mballem.demo_park_api.web.dto.UsuarioResponseDto;
 import com.mballem.demo_park_api.entity.Usuario;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
