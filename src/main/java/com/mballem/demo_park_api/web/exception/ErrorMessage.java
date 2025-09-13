@@ -1,5 +1,6 @@
 package com.mballem.demo_park_api.web.exception;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 @Getter
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorMessage {
 
     private String path;

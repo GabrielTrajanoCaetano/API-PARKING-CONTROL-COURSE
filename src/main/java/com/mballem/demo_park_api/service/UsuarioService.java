@@ -1,7 +1,9 @@
 package com.mballem.demo_park_api.service;
 
 import com.mballem.demo_park_api.entity.Usuario;
+import com.mballem.demo_park_api.exception.UsernameUniqueViolationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.mballem.demo_park_api.repository.UsuarioRepository;
@@ -16,7 +18,12 @@ public class UsuarioService {
 
     @Transactional
     public Usuario salvar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+        try {
+            return usuarioRepository.save(usuario);
+        } catch (DataIntegrityViolationException exe){
+            throw new UsernameUniqueViolationException(String.format("Username {%s} já cadastrado", usuario.getUsername()));
+        }
+
     }
 
     @Transactional(readOnly = true)
