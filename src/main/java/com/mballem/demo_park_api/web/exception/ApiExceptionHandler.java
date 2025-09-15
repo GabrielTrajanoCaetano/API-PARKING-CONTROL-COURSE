@@ -1,5 +1,6 @@
 package com.mballem.demo_park_api.web.exception;
 
+import com.mballem.demo_park_api.exception.PasswordInvalidException;
 import com.mballem.demo_park_api.exception.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.mballem.demo_park_api.exception.EntityNotFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -34,6 +36,25 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.PRECONDITION_FAILED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.PRECONDITION_FAILED, ex.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> EntityNotFoundException(EntityNotFoundException ex,
+                                                                HttpServletRequest request){
+        log.error("Api error -", ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordInvalidException.class)
+    public ResponseEntity<ErrorMessage> PasswordInvalidException (PasswordInvalidException ex,
+                                                                  HttpServletRequest request){
+        log.error("Api error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
 
