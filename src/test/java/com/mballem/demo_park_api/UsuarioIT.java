@@ -2,6 +2,7 @@ package com.mballem.demo_park_api;
 
 import com.mballem.demo_park_api.web.dto.UsuarioCreateDto;
 import com.mballem.demo_park_api.web.dto.UsuarioResponseDto;
+import com.mballem.demo_park_api.web.dto.UsuarioSenhaDto;
 import com.mballem.demo_park_api.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +124,67 @@ public class UsuarioIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
 
+    }
+
+    @Test
+    public void createUsuario_ComUsernameRepetido_RetornarErrorMessageComStatus409(){
+            ErrorMessage responseBody = testClient
+                    .post()
+                    .uri("/api/v1/usuarios")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(new UsuarioCreateDto("ana@email.com", "123456"))
+                    .exchange()
+                    .expectStatus().isEqualTo(409)
+                    .expectBody(ErrorMessage.class)
+                    .returnResult().getResponseBody();
+
+            org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+            org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
+    }
+
+    @Test
+    public void BuscarUsuario_ComIdExistente_RetornarUsuarioComStatus200(){
+        UsuarioResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/usuarios/100")
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(UsuarioResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(100);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getUsername()).isEqualTo("ana@email.com");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("ADMIN");
+    }
+
+    @Test
+    public void BuscarUsuario_ComIdInexistente_RetornarErrorMessageComStatus404(){
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/usuarios/104")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void editarSenha_ComDadosValidos_ReturnarStatus204() {
+        testClient
+                .patch()
+                .uri("/api/v1/usuarios/100")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UsuarioSenhaDto("123456", "456789", "456789"))
+                .exchange()
+                .expectStatus().isNoContent();
+
+    }
+
+
 
 
     }
-}

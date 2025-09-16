@@ -33,9 +33,9 @@ public class ApiExceptionHandler {
                                                                          HttpServletRequest request){
         log.error("Api error - ", ex);
         return ResponseEntity
-                .status(HttpStatus.PRECONDITION_FAILED)
+                .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.PRECONDITION_FAILED, ex.getMessage()));
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
