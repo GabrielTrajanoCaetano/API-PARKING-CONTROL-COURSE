@@ -66,7 +66,9 @@ public class UsuarioController {
                         content = @Content(mediaType = "application/json",schema = @Schema(implementation = Void.class))),
                     @ApiResponse(responseCode = "400", description = "Senha invalida ou nova senha não confere",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "A senha deve ter no mínimo 6 e máximo 6 caracteres",
+                    @ApiResponse(responseCode = "404,",description = "Recurso não encontrado",
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "422", description = "Campos invalidos ou mal formatados",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
     })
     @PatchMapping("/{id}")
