@@ -28,16 +28,19 @@ public class JwtUtils {
 
     }
 
+    //1- utilizada para criptografar a chave
     private static Key generateKey(){
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
+    //2- processo de expiração do token
     private static Date toExpireDate(Date start){
         LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime end = dateTime.plusDays(EXPIRE_DAYS).plusHours(EXPIRE_HOURS).plusMinutes(EXPIRE_MINUTES);
         return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
     }
 
+    //metodo que irá gerar o token
     public static JwtToken createToken(String username, String role){
         Date issuedAt = new Date();
         Date limit = toExpireDate(issuedAt);
@@ -54,15 +57,35 @@ public class JwtUtils {
         return new JwtToken(token);
     }
 
+    //utilizada para recuperar dados do token
     private static Claims getClaimsFromToken(String token){
         try{
             return Jwts.parser()
                     .setSigningKey(generateKey()).build()
-                    .parseClaimsJws().getBody();
+                    .parseClaimsJws(refactorToken(token)).getBody();
 
         }catch (JwtException ex){
             log.error(String.format("Token invalido %s", ex.getMessage()));
         }
+
+        return null;
+    }
+
+    public static String getUsernameFromToken(String token){
+        return getClaimsFromToken(token).getSubject();
+    }
+
+    public static boolean isTokenValid(String token){
+        try {
+            Jwts.parser()
+                    .setSigningKey(generateKey()).build()
+                    .parseClaimsJws(refactorToken(token));
+            return true;
+        } catch (JwtException ex) {
+            log.error(String.format("Token invalido %s", ex.getMessage()));
+        }
+
+        return false;
     }
 
     private static String refactorToken(String token){
