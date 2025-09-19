@@ -4,6 +4,7 @@ import com.mballem.demo_park_api.entity.Usuario;
 import com.mballem.demo_park_api.exception.EntityNotFoundException;
 import com.mballem.demo_park_api.exception.PasswordInvalidException;
 import com.mballem.demo_park_api.exception.UsernameUniqueViolationException;
+import com.mballem.demo_park_api.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -57,5 +58,17 @@ public class UsuarioService {
         List<Usuario> user = usuarioRepository.findAll();
 
         return user;
+    }
+
+    @Transactional(readOnly = true)
+    public Usuario BuscarPorUsername(String username) {
+        return usuarioRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Usuario com 'username' não encontrado", username)));
+    }
+
+
+    @Transactional(readOnly = true)
+    public Usuario.Role buscarRolePorUsername(String username) {
+        return usuarioRepository.findRoleByUsername(username);
     }
 }
