@@ -177,7 +177,7 @@ public class UsuarioIT {
     }
 
     @Test
-    public void editarSenha_ComDadosValidos_ReturnarStatus204() {
+    public void editarSenha_ComDadosValidos_RetornarStatus204() {
         testClient
                 .patch()
                 .uri("/api/v1/usuarios/100")
