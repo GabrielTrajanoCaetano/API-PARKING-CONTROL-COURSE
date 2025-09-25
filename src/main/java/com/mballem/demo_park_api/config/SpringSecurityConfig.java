@@ -1,5 +1,6 @@
 package com.mballem.demo_park_api.config;
 
+import com.mballem.demo_park_api.jwt.JwtAuthenticationEntryPoint;
 import com.mballem.demo_park_api.jwt.JwtAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -34,6 +36,8 @@ public class SpringSecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 ).addFilterBefore(
                         jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class
+                ).exceptionHandling(ex ->
+                        ex.authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 ).build();
 
     }
