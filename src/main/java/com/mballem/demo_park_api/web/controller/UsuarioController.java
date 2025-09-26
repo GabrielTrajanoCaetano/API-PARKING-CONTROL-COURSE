@@ -1,11 +1,11 @@
 package com.mballem.demo_park_api.web.controller;
 
+import com.mballem.demo_park_api.entity.Usuario;
+import com.mballem.demo_park_api.service.UsuarioService;
 import com.mballem.demo_park_api.web.dto.UsuarioCreateDto;
 import com.mballem.demo_park_api.web.dto.UsuarioResponseDto;
 import com.mballem.demo_park_api.web.dto.UsuarioSenhaDto;
 import com.mballem.demo_park_api.web.dto.mapper.UsuarioMapper;
-import com.mballem.demo_park_api.entity.Usuario;
-import com.mballem.demo_park_api.service.UsuarioService;
 import com.mballem.demo_park_api.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.util.List;
 
 @Tag(name = "Usuarios", description = "Contém todas as operações relativas aos recursos para cadastro, edição e leitura de um usuário")
@@ -69,14 +68,11 @@ public class UsuarioController {
     @Operation(summary = "Atualizar senha", description = "Requisição exige um Bearer Token. Acesso restrito a ADMIN|CLIENTE",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Senha atualizada com sucesso",
-                        content = @Content(mediaType = "application/json",schema = @Schema(implementation = Void.class))),
+                    @ApiResponse(responseCode = "204", description = "Senha atualizada com sucesso"),
                     @ApiResponse(responseCode = "400", description = "Senha invalida ou nova senha não confere",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "403", description = "Usuario sem permissão para acessar este recurso",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "404,",description = "Recurso não encontrado",
-                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "422", description = "Campos invalidos ou mal formatados",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
     })
