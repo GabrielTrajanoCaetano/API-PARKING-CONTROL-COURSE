@@ -38,6 +38,7 @@ public class AutenticacaoController {
                responses = {
                     @ApiResponse(responseCode = "200", description = "Autenticação realizada com sucesso e retorno de um bearer token",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = UsuarioResponseDto.class))),
+
                     @ApiResponse(responseCode = "400", description = "Credenciais invalidas",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "422", description = "Campo(s) invalido(s)",

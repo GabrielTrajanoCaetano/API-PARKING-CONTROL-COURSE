@@ -89,6 +89,8 @@ public class UsuarioController {
         responses = {
             @ApiResponse(responseCode = "200", description = "Usuários encontrados com sucesso",
                 content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UsuarioResponseDto.class)))),
+                @ApiResponse(responseCode = "401", description = "Usuario não autenticado, acesso negado",
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                 @ApiResponse(responseCode = "403", description = "Usuario sem permissão para acessar este recurso",
                         content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
     })

@@ -1,5 +1,6 @@
 package com.mballem.demo_park_api.web.exception;
 
+import com.mballem.demo_park_api.exception.CpfUniqueViolationException;
 import com.mballem.demo_park_api.exception.PasswordInvalidException;
 import com.mballem.demo_park_api.exception.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +40,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request,HttpStatus.UNPROCESSABLE_ENTITY, "Campo(s) invalidos",result ));
     }
 
-    @ExceptionHandler(UsernameUniqueViolationException.class)
+    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
     public ResponseEntity<ErrorMessage> UsernameUniqueViolationException(UsernameUniqueViolationException ex,
                                                                          HttpServletRequest request){
         log.error("Api error - ", ex);

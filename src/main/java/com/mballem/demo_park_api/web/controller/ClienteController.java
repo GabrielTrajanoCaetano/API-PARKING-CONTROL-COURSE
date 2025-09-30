@@ -1,0 +1,56 @@
+package com.mballem.demo_park_api.web.controller;
+
+import com.mballem.demo_park_api.entity.Cliente;
+import com.mballem.demo_park_api.jwt.JwtUserDetails;
+import com.mballem.demo_park_api.service.ClienteService;
+import com.mballem.demo_park_api.service.UsuarioService;
+import com.mballem.demo_park_api.web.dto.ClienteCreateDto;
+import com.mballem.demo_park_api.web.dto.ClienteResponseDto;
+import com.mballem.demo_park_api.web.dto.mapper.ClienteMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springdoc.api.ErrorMessage;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("api/v1/clientes")
+public class ClienteController {
+
+    private final ClienteService clienteService;
+    private final UsuarioService usuarioService;
+
+    @Operation(summary = "Criar um novo cliente", description = "Recurso para criar um novo cliente vinculado a um usuário cadastrado." +
+            "Requisição exige uso de um bearer token. Acesso restrito a Role = 'CLIENTE'",
+    responses = {
+            @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClienteResponseDto.class))),
+            @ApiResponse(responseCode = "409", description = "Cliente CPF já possui cadastro no sistema",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "422", description = "Recurso não processo por falta de dados ou dados invalidos",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil de ADMIN",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+    })
+
+    @PostMapping
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ClienteResponseDto> create(@RequestBody @Valid ClienteCreateDto dto,
+                                                     @AuthenticationPrincipal JwtUserDetails userDetails) {
+        Cliente cliente = ClienteMapper.tocliente(dto);
+        cliente.setUsuario(usuarioService.buscarPorId(userDetails.getId()));
+        clienteService.salvar(cliente);
+        return ResponseEntity.status(201).body(ClienteMapper.toDto(cliente));
+
+    }
+}
