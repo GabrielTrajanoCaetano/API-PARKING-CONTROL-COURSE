@@ -40,8 +40,18 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request,HttpStatus.UNPROCESSABLE_ENTITY, "Campo(s) invalidos",result ));
     }
 
-    @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class})
+    @ExceptionHandler(UsernameUniqueViolationException.class)
     public ResponseEntity<ErrorMessage> UsernameUniqueViolationException(UsernameUniqueViolationException ex,
+                                                                         HttpServletRequest request){
+        log.error("Api error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(CpfUniqueViolationException.class)
+    public ResponseEntity<ErrorMessage> cpfUniqueViolationException(CpfUniqueViolationException ex,
                                                                          HttpServletRequest request){
         log.error("Api error - ", ex);
         return ResponseEntity

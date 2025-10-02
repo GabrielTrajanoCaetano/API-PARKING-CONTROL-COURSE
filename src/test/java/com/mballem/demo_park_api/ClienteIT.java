@@ -71,4 +71,21 @@ public class ClienteIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
+
+    @Test
+    public void criarCliente_ComCpfJaExistente_RetornaErrorMessageStatus409(){
+        ErrorMessage responseBody = testClient
+                .post()
+                .uri("/api/v1/clientes")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "cesar@email.com", "123456"))
+                .bodyValue(new ClienteCreateDto("Cesariano Gonçalves", "55352517047"))
+                .exchange()
+                .expectStatus().isEqualTo(409)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
+    }
 }
