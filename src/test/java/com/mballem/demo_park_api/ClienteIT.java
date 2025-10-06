@@ -129,4 +129,52 @@ public class ClienteIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
     }
+
+    @Test
+    public void buscarCliente_ComIdentificadorExistentePeloAdmin_RetornaClienteComStatus200(){
+        ClienteResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes/20")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(ClienteResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(20);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getCpf()).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNome()).isNotNull();
+
+    }
+
+    @Test
+    public void buscarCliente_ComClienteNaoAutorizado_RetornarErrorMessageComStatus403(){
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes/20")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+    @Test
+    public void buscarCliente_ComIdentificadorInexistente_RetornarErrorMessageComStatus404(){
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/clientes/30")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
 }

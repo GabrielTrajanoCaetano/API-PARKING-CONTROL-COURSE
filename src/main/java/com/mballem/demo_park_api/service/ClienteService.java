@@ -2,8 +2,8 @@ package com.mballem.demo_park_api.service;
 
 import com.mballem.demo_park_api.entity.Cliente;
 import com.mballem.demo_park_api.exception.CpfUniqueViolationException;
+import com.mballem.demo_park_api.exception.EntityNotFoundException;
 import com.mballem.demo_park_api.repository.ClienteRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,6 @@ public class ClienteService {
 
     @Transactional(readOnly = true)
     public Cliente buscarPorId(Long id) {
-        return clienteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Cliente id=%s não pode ser encontrado", id)));
+        return clienteRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Cliente id= %s não pode ser encontrado", id)));
     }
 }

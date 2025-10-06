@@ -1,6 +1,7 @@
 package com.mballem.demo_park_api.web.exception;
 
 import com.mballem.demo_park_api.exception.CpfUniqueViolationException;
+import com.mballem.demo_park_api.exception.EntityNotFoundException;
 import com.mballem.demo_park_api.exception.PasswordInvalidException;
 import com.mballem.demo_park_api.exception.UsernameUniqueViolationException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.mballem.demo_park_api.exception.EntityNotFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -63,8 +63,8 @@ public class ApiExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorMessage> EntityNotFoundException(EntityNotFoundException ex,
                                                                 HttpServletRequest request){
-        log.error("Api error -", ex);
-        return ResponseEntity
+        log.error("Api error - {}: {}", ex.getClass().getSimpleName(), ex.getMessage());
+                return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
