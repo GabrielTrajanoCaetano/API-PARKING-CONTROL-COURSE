@@ -4,10 +4,13 @@ import com.mballem.demo_park_api.entity.Cliente;
 import com.mballem.demo_park_api.exception.CpfUniqueViolationException;
 import com.mballem.demo_park_api.exception.EntityNotFoundException;
 import com.mballem.demo_park_api.repository.ClienteRepository;
+import com.mballem.demo_park_api.repository.projection.ClienteProjection;
 import com.mballem.demo_park_api.web.dto.ClienteResponseDto;
 import com.mballem.demo_park_api.web.dto.mapper.ClienteMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,9 +38,7 @@ public class ClienteService {
     }
 
     @Transactional(readOnly = true)
-    public List<ClienteResponseDto> findAll() {
-
-        List<Cliente> cliente = clienteRepository.findAll();
-        return ClienteMapper.toDtos(cliente);
+    public Page<ClienteProjection> findAll(Pageable pageable) {
+        return clienteRepository.findAllPageable(pageable);
     }
 }

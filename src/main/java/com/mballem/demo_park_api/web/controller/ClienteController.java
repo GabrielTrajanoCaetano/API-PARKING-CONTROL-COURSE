@@ -2,11 +2,14 @@ package com.mballem.demo_park_api.web.controller;
 
 import com.mballem.demo_park_api.entity.Cliente;
 import com.mballem.demo_park_api.jwt.JwtUserDetails;
+import com.mballem.demo_park_api.repository.projection.ClienteProjection;
 import com.mballem.demo_park_api.service.ClienteService;
 import com.mballem.demo_park_api.service.UsuarioService;
 import com.mballem.demo_park_api.web.dto.ClienteCreateDto;
 import com.mballem.demo_park_api.web.dto.ClienteResponseDto;
+import com.mballem.demo_park_api.web.dto.PageableDto;
 import com.mballem.demo_park_api.web.dto.mapper.ClienteMapper;
+import com.mballem.demo_park_api.web.dto.mapper.PageableMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,16 +17,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springdoc.api.ErrorMessage;
-import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Clientes", description = "Contém todas as operações relativas ao recurso de um cliente")
 @RequiredArgsConstructor
@@ -82,8 +85,8 @@ public class ClienteController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<ClienteResponseDto>> getAll(){
-            List<ClienteResponseDto> responseDtos = clienteService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
+    public ResponseEntity<PageableDto> getAll(Pageable pageable){
+            Page<ClienteProjection> clientes = clienteService.findAll(pageable);
+        return ResponseEntity.ok(PageableMapper.toDto(clientes));
     }
 }
