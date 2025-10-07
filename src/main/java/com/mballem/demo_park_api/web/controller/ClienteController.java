@@ -17,10 +17,13 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Clientes", description = "Contém todas as operações relativas ao recurso de um cliente")
 @RequiredArgsConstructor
@@ -75,5 +78,12 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDto> getById(@PathVariable Long id){
         Cliente cliente = clienteService.buscarPorId(id);
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ClienteResponseDto>> getAll(){
+            List<ClienteResponseDto> responseDtos = clienteService.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
     }
 }
