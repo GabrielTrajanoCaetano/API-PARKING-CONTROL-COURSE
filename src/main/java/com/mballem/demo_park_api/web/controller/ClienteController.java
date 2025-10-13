@@ -11,9 +11,12 @@ import com.mballem.demo_park_api.web.dto.PageableDto;
 import com.mballem.demo_park_api.web.dto.mapper.ClienteMapper;
 import com.mballem.demo_park_api.web.dto.mapper.PageableMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +85,27 @@ public class ClienteController {
         Cliente cliente = clienteService.buscarPorId(id);
         return ResponseEntity.ok(ClienteMapper.toDto(cliente));
     }
+
+    @Operation(summary = "Recupera lista de clientes", description = "Requisição exige uso de um bearer token. Acesso restrito a Role= 'ADMIN'",
+    security = @SecurityRequirement(name = "security"),
+    parameters = {
+            @Parameter(in = ParameterIn.QUERY, name = "page",
+                    content = @Content(schema = @Schema(type = "integer", defaultValue = "0")),
+                    description = "Representa a pagina retornada"),
+            @Parameter(in = ParameterIn.QUERY, name = "size",
+                    content = @Content(schema = @Schema(type = "integer",defaultValue = "20")),
+                    description = "Representa o total de elementos por pagina"),
+            @Parameter(in = ParameterIn.QUERY, name = "sort",
+                    content = @Content(schema = @Schema(type = "string", defaultValue = "id,asc")),
+                    description = "Representa a ordenação dos resultados. Aceita multiplos critérios de ordenação são suportados")
+    },
+    responses = {
+            @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
+            content = @Content(mediaType = "application/json;charset=UTF-8", schema = @Schema(implementation = ClienteResponseDto.class))),
+            @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil de CLIENTE",
+            content = @Content(mediaType = "application/json;charset=UTF-8", schema = @Schema(implementation = ErrorMessage.class)))
+    })
+
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
