@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Clientes", description = "Contém todas as operações relativas ao recurso de um cliente")
@@ -113,4 +114,26 @@ public class ClienteController {
             Page<ClienteProjection> clientes = clienteService.findAll(pageable);
         return ResponseEntity.ok(PageableMapper.toDto(clientes));
     }
+
+    @Operation(summary = "Recuperar dados do cliente autenticado",
+               description = "Requisição exige uso de um bearer token. Acesso restrito a Role = 'CLIENTE'",
+               security = @SecurityRequirement(name = "security"),
+               responses = {
+                       @ApiResponse(responseCode = "200", description = "Recurso recuperado com sucesso",
+                                content = @Content(mediaType = "application/json;charset=UTF-8",
+                                          schema = @Schema(implementation = ClienteResponseDto.class))
+                       ),
+                       @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil do ADMIN",
+                                content = @Content(mediaType = "application/json;charset=UTF-8",
+                                          schema = @Schema(implementation = ErrorMessage.class)))
+               })
+
+    @GetMapping("/detalhes")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<ClienteResponseDto> getDetalhes(@AuthenticationPrincipal JwtUserDetails userDetails){
+        Cliente cliente = clienteService.buscarPorUsuarioId(userDetails.getId());
+
+        return ResponseEntity.ok(ClienteMapper.toDto(cliente));
+    }
+
 }
