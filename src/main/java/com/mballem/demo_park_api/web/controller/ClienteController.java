@@ -95,7 +95,7 @@ public class ClienteController {
             @Parameter(in = ParameterIn.QUERY, name = "size",
                     content = @Content(schema = @Schema(type = "integer",defaultValue = "20")),
                     description = "Representa o total de elementos por pagina"),
-            @Parameter(in = ParameterIn.QUERY, name = "sort",
+            @Parameter(in = ParameterIn.QUERY, name = "sort", hidden = true,
                     content = @Content(schema = @Schema(type = "string", defaultValue = "id,asc")),
                     description = "Representa a ordenação dos resultados. Aceita multiplos critérios de ordenação são suportados")
     },
@@ -109,7 +109,7 @@ public class ClienteController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PageableDto> getAll(Pageable pageable){
+    public ResponseEntity<PageableDto> getAll(@Parameter(hidden = true) @PageableDefault(size = 5, sort = {"nome"}) Pageable pageable){
             Page<ClienteProjection> clientes = clienteService.findAll(pageable);
         return ResponseEntity.ok(PageableMapper.toDto(clientes));
     }
