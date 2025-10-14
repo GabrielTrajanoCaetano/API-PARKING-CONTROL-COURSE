@@ -1,9 +1,6 @@
 package com.mballem.demo_park_api.web.exception;
 
-import com.mballem.demo_park_api.exception.CpfUniqueViolationException;
-import com.mballem.demo_park_api.exception.EntityNotFoundException;
-import com.mballem.demo_park_api.exception.PasswordInvalidException;
-import com.mballem.demo_park_api.exception.UsernameUniqueViolationException;
+import com.mballem.demo_park_api.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -54,6 +51,16 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> cpfUniqueViolationException(CpfUniqueViolationException ex,
                                                                          HttpServletRequest request){
         log.error("Api error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(CodigoUniqueViolationException.class)
+    public ResponseEntity<ErrorMessage> CodigoUniqueViolationException(CodigoUniqueViolationException ex,
+                                                                        HttpServletRequest request){
+        log.error("Api error - ");
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
