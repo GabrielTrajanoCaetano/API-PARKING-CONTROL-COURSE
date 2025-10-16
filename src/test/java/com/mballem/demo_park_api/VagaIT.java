@@ -80,6 +80,22 @@ public class VagaIT {
     }
 
     @Test
+    public void criarVaga_ComUsuarioNaoAutorizado_RetornarErrorMessageStatus403(){
+        testClient
+                .post()
+                .uri("/api/v1/vagas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
+                .bodyValue(new VagaCreateDto("A-99", "LIVRE"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("status").isEqualTo(403)
+                .jsonPath("method").isEqualTo("POST")
+                .jsonPath("path").isEqualTo("/api/v1/vagas");
+    }
+
+    @Test
     public void buscarVaga_ComCodigoExistente_RetornarVagaComStatus200(){
         VagaResponseDto responseBody = testClient
                 .get()
@@ -106,5 +122,19 @@ public class VagaIT {
                 .jsonPath("status").isEqualTo(404)
                 .jsonPath("method").isEqualTo("GET")
                 .jsonPath("path").isEqualTo("/api/v1/vagas/123456");
+    }
+
+    @Test
+    public void buscarVaga_ComUsuarioNaoAutorizado_RetornarErrorMessageStatus403(){
+        testClient
+                .get()
+                .uri("/api/v1/vagas/{codigo}", "A-56")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("status").isEqualTo(403)
+                .jsonPath("method").isEqualTo("GET")
+                .jsonPath("path").isEqualTo("/api/v1/vagas/A-56");
     }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +33,17 @@ public class VagaController {
 
     @Operation(summary = "Criar uma nova vaga", description = "Recurso para criar uma nova vaga." +
     "Requisição exige uso de um bearer token, Acesso restrito a Role= 'ADMIN'",
+            security = @SecurityRequirement(name = "security"),
     responses = {
             @ApiResponse(responseCode = "201", description = "Recurso criado com sucesso",
                     headers = @Header(name = HttpHeaders.LOCATION, description = "URL do recurso criado")),
             @ApiResponse(responseCode = "409", description = "Vaga já cadastrada",
                     content = @Content(mediaType = "Application/json", schema = @Schema(implementation = ErrorMessage.class))),
             @ApiResponse(responseCode = "422", description = "Recurso não processado por falta de dados validos",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Acesso negado, permissão de acesso para Role= ADMIN",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+
     })
 
     @PostMapping
@@ -54,11 +59,14 @@ public class VagaController {
 
     @Operation(summary = "Localizar uma vaga", description = "Recurso para retornar uma vaga pelo código" +
     "Requisição exige uso de um bearer token. Acesso restrito a Role= 'ADMIN'",
+        security = @SecurityRequirement(name = "security"),
         responses = {
             @ApiResponse(responseCode = "200", description = "Recurso criado com sucesso",
             content = @Content(mediaType = "application/json", schema = @Schema(implementation = VagaResponseDto.class))),
             @ApiResponse(responseCode = "404", description = "Vaga não localizada",
-            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                @ApiResponse(responseCode = "403", description = "Acesso negado, permissão de acesso para Role= ADMIN",
+                        content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
         })
 
     @GetMapping("/{codigo}")
