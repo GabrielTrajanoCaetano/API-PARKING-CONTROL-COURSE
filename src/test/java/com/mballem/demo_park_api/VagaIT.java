@@ -1,6 +1,7 @@
 package com.mballem.demo_park_api;
 
 import com.mballem.demo_park_api.web.dto.VagaCreateDto;
+import com.mballem.demo_park_api.web.dto.VagaResponseDto;
 import com.mballem.demo_park_api.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class VagaIT {
     }
 
     @Test
-    public void criarVaga_ComVagaExistente_RetornarErrorMessageStatus409(){
-       ErrorMessage responseBody = testClient
+    public void criarVaga_ComCodigoJaExistente_RetornarErrorMessageStatus409(){
+        testClient
                 .post()
                 .uri("/api/v1/vagas")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -44,29 +45,66 @@ public class VagaIT {
                 .bodyValue(new VagaCreateDto("A-56", "LIVRE"))
                 .exchange()
                 .expectStatus().isEqualTo(409)
-                .expectBody(ErrorMessage.class)
-                .returnResult().getResponseBody();
-
-       org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-       org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
+                .expectBody()
+                .jsonPath("status").isEqualTo(409)
+                .jsonPath("method").isEqualTo("POST")
+                .jsonPath("path").isEqualTo("/api/v1/vagas");
     }
 
     @Test
-    public void criarVaga_ComDadosIncompletos_RetornarErrorMessageStatus422(){
-        ErrorMessage responseBody = testClient
+    public void criarVaga_ComDadosInvalidos_RetornarErrorMessageStatus422(){
+       testClient
                 .post()
                 .uri("/api/v1/vagas")
                 .contentType(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
-                .bodyValue(new VagaCreateDto("45", "OCUPADO"))
+                .bodyValue(new VagaCreateDto("", ""))
                 .exchange()
-                .expectStatus().isEqualTo(422)
-                .expectBody(ErrorMessage.class)
+                .expectBody()
+                .jsonPath("status").isEqualTo(422)
+                .jsonPath("method").isEqualTo("POST")
+                .jsonPath("path").isEqualTo("/api/v1/vagas");
+
+        testClient
+                .post()
+                .uri("/api/v1/vagas")
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .bodyValue(new VagaCreateDto("45444", "OCUPO"))
+                .exchange()
+                .expectBody()
+                .jsonPath("status").isEqualTo(422)
+                .jsonPath("method").isEqualTo("POST")
+                .jsonPath("path").isEqualTo("/api/v1/vagas");
+
+    }
+
+    @Test
+    public void buscarVaga_ComCodigoExistente_RetornarVagaComStatus200(){
+        VagaResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/vagas/A-56")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(VagaResponseDto.class)
                 .returnResult().getResponseBody();
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(422);
 
+    }
 
+    @Test
+    public void buscarVaga_ComVagaInexistente_RetornarErrorMessageStatus404(){
+        testClient
+                .get()
+                .uri("/api/v1/vagas/{codigo}", "123456")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(404)
+                .expectBody()
+                .jsonPath("status").isEqualTo(404)
+                .jsonPath("method").isEqualTo("GET")
+                .jsonPath("path").isEqualTo("/api/v1/vagas/123456");
     }
 }
