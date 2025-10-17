@@ -12,7 +12,7 @@ public class EstacionamentoUtils {
         LocalDateTime dateTime = LocalDateTime.now();
         String recibo = dateTime.toString().substring(0,19);
         return recibo.replace("-", "")
-                .replace(":", "-")
+                .replace(":", "")
                 .replace("T", "-");
     }
 }
