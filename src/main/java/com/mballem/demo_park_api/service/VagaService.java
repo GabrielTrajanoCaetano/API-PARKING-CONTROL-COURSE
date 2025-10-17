@@ -9,6 +9,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.mballem.demo_park_api.entity.Vaga.StatusVaga.LIVRE;
+
 @Service
 @RequiredArgsConstructor
 public class VagaService {
@@ -30,4 +32,8 @@ public class VagaService {
         return vagaRepository.findByCodigo(codigo).orElseThrow(() -> new EntityNotFoundException(String.format("Vaga com código %s não foi encontrado", codigo)));
     }
 
+    @Transactional(readOnly = true)
+    public Vaga buscarPorVagaLivre() {
+        return vagaRepository.findFirstByStatus(LIVRE).orElseThrow(()-> new EntityNotFoundException("Nenhuma vaga livre foi encontrada"));
+    }
 }
