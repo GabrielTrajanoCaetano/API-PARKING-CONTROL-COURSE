@@ -14,14 +14,9 @@ insert into CLIENTES(id,nome,cpf,id_usuario) values (10, 'Bianca Silva','7907442
 insert into CLIENTES(id,nome,cpf,id_usuario) values (20, 'Roberto Gomes','55352517047', 102);
 insert into CLIENTES(id,nome,cpf,id_usuario) values (30, 'Tobias Machado','70799494089', 103);
 
-INSERT INTO VAGAS(id, codigo, status) VALUES (1, 'A-56', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (2, 'B-48', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (3, 'B-56', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (4, 'A-68', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (5, 'A-36', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (6, 'B-92', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (7, 'B-31', 'LIVRE');
-INSERT INTO VAGAS(id, codigo, status) VALUES (8, 'A-51', 'LIVRE');
+INSERT INTO VAGAS(id, codigo, status) VALUES (1, 'A-56', 'OCUPADA');
+INSERT INTO VAGAS(id, codigo, status) VALUES (2, 'B-48', 'OCUPADA');
+INSERT INTO VAGAS(id, codigo, status) VALUES (3, 'B-56', 'OCUPADA');
 
 INSERT INTO clientes_tem_vagas (numero_recibo, placa, marca, modelo, cor, data_entrada, id_cliente, id_vaga)
     VALUES ('20230313-101300', 'FIT-1020', 'FIAT', 'PALIO', 'VERDE', '2023-03-13 10:15:00', 20, 1);
