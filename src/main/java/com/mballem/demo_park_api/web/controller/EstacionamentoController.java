@@ -82,11 +82,18 @@ public class EstacionamentoController {
     })
 
     @GetMapping("/check-in/{recibo}")
-    @PreAuthorize("hasRole('CLIENTE')")
+    @PreAuthorize("hasAnyRole('CLIENTE', 'ADMIN')")
     public ResponseEntity<EstacionamentoResponseDto> getByRecibo(@PathVariable String recibo){
             ClienteVagas vaga = clienteVagaService.buscarVagaPeloRecibo(recibo);
             EstacionamentoResponseDto dto = ClienteVagaMapper.toDto(vaga);
             return ResponseEntity.ok(dto);
+    }
+    @PutMapping("/check-out/{recibo}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<EstacionamentoResponseDto> checkOut(@PathVariable String recibo){
+        ClienteVagas vaga = estacionamentoService.checkOut(recibo);
+        EstacionamentoResponseDto dto = ClienteVagaMapper.toDto(vaga);
+        return ResponseEntity.ok(dto);
     }
 
 

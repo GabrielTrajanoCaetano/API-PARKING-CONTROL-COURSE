@@ -8,10 +8,12 @@ import com.mballem.demo_park_api.repository.ClienteVagaRepository;
 import com.mballem.demo_park_api.util.EstacionamentoUtils;
 import com.mballem.demo_park_api.web.dto.EstacionamentoResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Service
@@ -39,5 +41,23 @@ public class EstacionamentoService {
         return clienteVagaService.salvar(clienteVagas);
     }
 
+    @Transactional
+    public ClienteVagas checkOut(String recibo) {
+        ClienteVagas clienteVagas = clienteVagaService.buscarVagaPeloRecibo(recibo);
 
+        LocalDateTime dataSaida = LocalDateTime.now();
+
+        BigDecimal valor = EstacionamentoUtils.calcularCusto(clienteVagas.getDataEntrada(), dataSaida);
+        clienteVagas.setValor(valor);
+
+        long totalDeVezes = clienteVagaService.getTotalDeVezesEstacionamentoCompleto(clienteVagas.getCliente().getCpf());
+
+        BigDecimal desconto = EstacionamentoUtils.calcularDesconto(valor, totalDeVezes);
+        clienteVagas.setDesconto(desconto);
+
+        clienteVagas.setDataSaida(dataSaida);
+        clienteVagas.getVaga().setStatus(Vaga.StatusVaga.LIVRE);
+
+       return clienteVagaService.salvar(clienteVagas);
+    }
 }
