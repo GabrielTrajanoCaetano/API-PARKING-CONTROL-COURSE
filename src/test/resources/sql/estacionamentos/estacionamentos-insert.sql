@@ -24,7 +24,7 @@ INSERT INTO VAGAS(id, codigo, status) VALUES (7, 'B-31', 'LIVRE');
 INSERT INTO VAGAS(id, codigo, status) VALUES (8, 'A-51', 'LIVRE');
 
 INSERT INTO clientes_tem_vagas (numero_recibo, placa, marca, modelo, cor, data_entrada, id_cliente, id_vaga)
-    VALUES ('20230313-101300', 'FIT-1020', 'FIAT', 'PALIO', 'VERDE', '2023-03-13 10:15:00', 20, 1);
+    VALUES ('20251022-101500', 'FIT-1020', 'FIAT', 'PALIO', 'VERDE', '2025-10-22 10:15:00', 20, 1);
 INSERT INTO clientes_tem_vagas (numero_recibo, placa, marca, modelo, cor, data_entrada, id_cliente, id_vaga)
     VALUES ('202303115-112000', 'COR-3025', 'CHEVROLET', 'CORSA', 'PRETO', '2023-03-15 11:20:00', 10, 2);
 INSERT INTO clientes_tem_vagas (numero_recibo, placa, marca, modelo, cor, data_entrada, id_cliente, id_vaga)

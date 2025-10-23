@@ -67,7 +67,7 @@ public class EstacionamentoController {
                 return ResponseEntity.created(location).body(responseDto);
     }
 
-    @Operation(summary = "Localizar um veículo no estacionamento", description = "Recurso para retornar um veiculo estacionado" +
+    @Operation(summary = "Localizar um veículo no estacionamento", description = "Recurso para retornar um veiculo estacionado " +
             "Pelo nº do recibo. Requisição exige uso de um bearer token",
     security = @SecurityRequirement(name = "security"),
     parameters = {
@@ -88,6 +88,22 @@ public class EstacionamentoController {
             EstacionamentoResponseDto dto = ClienteVagaMapper.toDto(vaga);
             return ResponseEntity.ok(dto);
     }
+    @Operation(summary = "Operação de check-out", description = "Recurso para dar saida de um veiculo do estacionamento. " +
+    "Requisição exige uso de um bearer token. Acesso restrito a Role='ADMIN'",
+    security = @SecurityRequirement(name = "security"),
+    parameters = {
+            @Parameter(in = PATH, name ="recibo", description = "Número do recibo gerado pelo check-in")
+    },
+    responses = {
+            @ApiResponse(responseCode = "200", description = "Recurso atualizado com sucesso",
+            content = @Content(mediaType = "application/json;charset=UTF-8", schema = @Schema(implementation = EstacionamentoResponseDto.class))),
+            @ApiResponse(responseCode = "404", description = "Numero de recibo inexistente ou " +
+                    "o veículo já passou pelo check-out.",
+            content = @Content(mediaType = "application/json;charset=UTF-8", schema = @Schema(implementation = ErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Recurso não permitido ao perfil de CLIENTE",
+            content = @Content(mediaType = "application/json;charset=UTF-8", schema = @Schema(implementation = ErrorMessage.class)))
+    })
+
     @PutMapping("/check-out/{recibo}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EstacionamentoResponseDto> checkOut(@PathVariable String recibo){

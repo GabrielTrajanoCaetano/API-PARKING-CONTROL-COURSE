@@ -1,6 +1,7 @@
 package com.mballem.demo_park_api;
 
 import com.mballem.demo_park_api.web.dto.EstacionamentoCreateDto;
+import com.mballem.demo_park_api.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -122,7 +123,7 @@ public class EstacionamentoIT {
         //numero_recibo, placa, marca, modelo, cor, data_entrada, id_cliente, id_vaga
         testClient
                 .get()
-                .uri("/api/v1/estacionamentos/check-in/{recibo}", "20230313-101300" )
+                .uri("/api/v1/estacionamentos/check-in/{recibo}", "20251022-101500" )
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
@@ -132,8 +133,8 @@ public class EstacionamentoIT {
                 .jsonPath("modelo").isEqualTo("PALIO")
                 .jsonPath("cor").isEqualTo("VERDE")
                 .jsonPath("clienteCpf").isEqualTo("55352517047")
-                .jsonPath("recibo").isEqualTo("20230313-101300")
-                .jsonPath("dataEntrada").isEqualTo("2023-03-13 10:15:00")
+                .jsonPath("recibo").isEqualTo("20251022-101500")
+                .jsonPath("dataEntrada").isEqualTo("2025-10-22 10:15:00")
                 .jsonPath("vagaCodigo").isEqualTo("A-56");
     }
     @Test
@@ -141,7 +142,7 @@ public class EstacionamentoIT {
         //numero_recibo, placa, marca, modelo, cor, data_entrada, id_cliente, id_vaga
         testClient
                 .get()
-                .uri("/api/v1/estacionamentos/check-in/{recibo}", "20230313-101300" )
+                .uri("/api/v1/estacionamentos/check-in/{recibo}", "20251022-101500" )
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
@@ -151,8 +152,8 @@ public class EstacionamentoIT {
                 .jsonPath("modelo").isEqualTo("PALIO")
                 .jsonPath("cor").isEqualTo("VERDE")
                 .jsonPath("clienteCpf").isEqualTo("55352517047")
-                .jsonPath("recibo").isEqualTo("20230313-101300")
-                .jsonPath("dataEntrada").isEqualTo("2023-03-13 10:15:00")
+                .jsonPath("recibo").isEqualTo("20251022-101500")
+                .jsonPath("dataEntrada").isEqualTo("2025-10-22 10:15:00")
                 .jsonPath("vagaCodigo").isEqualTo("A-56");
     }
 
@@ -168,6 +169,55 @@ public class EstacionamentoIT {
                 .jsonPath("status").isEqualTo("404")
                 .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-in/20240315-101300")
                 .jsonPath("method").isEqualTo("GET");
+    }
+
+    @Test
+    public void criarCheckout_ComDadosValido_RetornarEstacionamentoComStatus200(){
+
+        testClient.put()
+                .uri("/api/v1/estacionamentos/check-out/20251022-101500")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody()
+                .jsonPath("placa").isEqualTo("FIT-1020")
+                .jsonPath("marca").isEqualTo("FIAT")
+                .jsonPath("modelo").isEqualTo("PALIO")
+                .jsonPath("cor").isEqualTo("VERDE")
+                .jsonPath("clienteCpf").isEqualTo("55352517047")
+                .jsonPath("recibo").isEqualTo("20251022-101500")
+                .jsonPath("dataEntrada").isEqualTo("2025-10-22 10:15:00")
+                .jsonPath("vagaCodigo").isEqualTo("A-56")
+                .jsonPath("dataSaida").exists()
+                .jsonPath("valor").exists()
+                .jsonPath("desconto").exists();
+    }
+
+    @Test
+    public void criarCheckout_ComReciboInexistentes_RetornarErrorMessageStatus404(){
+        testClient.put()
+                .uri("/api/v1/estacionamentos/check-out/{recibo}", "20230313-101355")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody()
+                .jsonPath("status").isEqualTo(404)
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-out/20230313-101355")
+                .jsonPath("method").isEqualTo("PUT");
+
+    }
+
+    @Test
+    public void criarCheckout_ComAcessoClienteNegado_RetornarErrorMessageComStatus403(){
+        testClient.put()
+                .uri("/api/v1/estacionamentos/check-out/{recibo}", "20251022-101500")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
+                .exchange()
+                .expectStatus().isForbidden()
+                .expectBody()
+                .jsonPath("status").isEqualTo("403")
+                .jsonPath("path").isEqualTo("/api/v1/estacionamentos/check-out/20251022-101500")
+                .jsonPath("method").isEqualTo("PUT");
     }
 }
 
