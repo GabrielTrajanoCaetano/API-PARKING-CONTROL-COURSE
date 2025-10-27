@@ -4,11 +4,9 @@ import com.mballem.demo_park_api.entity.ClienteVagas;
 import com.mballem.demo_park_api.exception.EntityNotFoundException;
 import com.mballem.demo_park_api.repository.ClienteVagaRepository;
 import com.mballem.demo_park_api.repository.projection.ClienteVagaProjection;
-import com.mballem.demo_park_api.web.dto.EstacionamentoResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
