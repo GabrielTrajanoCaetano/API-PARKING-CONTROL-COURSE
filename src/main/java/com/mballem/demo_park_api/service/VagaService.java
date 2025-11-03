@@ -3,6 +3,7 @@ package com.mballem.demo_park_api.service;
 import com.mballem.demo_park_api.entity.Vaga;
 import com.mballem.demo_park_api.exception.CodigoUniqueViolationException;
 import com.mballem.demo_park_api.exception.EntityNotFoundException;
+import com.mballem.demo_park_api.exception.VagaDisponivelException;
 import com.mballem.demo_park_api.repository.VagaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,18 +23,17 @@ public class VagaService {
         try{
             return vagaRepository.save(vaga);
         } catch (DataIntegrityViolationException ex){
-            throw new CodigoUniqueViolationException(String.format("Vaga com codigo %s ja cadastrada", vaga.getCodigo())
-            );
+            throw new CodigoUniqueViolationException("Vaga", vaga.getCodigo());
         }
     }
 
     @Transactional(readOnly = true)
     public Vaga buscarPorCodigo(String codigo){
-        return vagaRepository.findByCodigo(codigo).orElseThrow(() -> new EntityNotFoundException(String.format("Vaga com código %s não foi encontrado", codigo)));
+        return vagaRepository.findByCodigo(codigo).orElseThrow(() -> new EntityNotFoundException("Vaga", codigo));
     }
 
     @Transactional(readOnly = true)
     public Vaga buscarPorVagaLivre() {
-        return vagaRepository.findFirstByStatus(LIVRE).orElseThrow(()-> new EntityNotFoundException("Nenhuma vaga livre foi encontrada"));
+        return vagaRepository.findFirstByStatus(LIVRE).orElseThrow(()-> new VagaDisponivelException("Nenhuma vaga livre foi encontrada"));
     }
 }

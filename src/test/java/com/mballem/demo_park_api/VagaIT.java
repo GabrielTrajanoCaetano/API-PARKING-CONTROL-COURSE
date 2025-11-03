@@ -2,20 +2,22 @@ package com.mballem.demo_park_api;
 
 import com.mballem.demo_park_api.web.dto.VagaCreateDto;
 import com.mballem.demo_park_api.web.dto.VagaResponseDto;
-import com.mballem.demo_park_api.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.net.URI;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "/sql/vagas/vagas-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = "/sql/vagas/vagas-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = "/sql/vagas/vagas-delete.sql", executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "/sql/vagas/vagas-insert.sql", executionPhase = BEFORE_TEST_METHOD)
 public class VagaIT {
 
     @Autowired
@@ -27,8 +29,9 @@ public class VagaIT {
                 .post()
                 .uri("/api/v1/vagas")
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
-                .bodyValue(new VagaCreateDto("G-48", "LIVRE"))
+                .bodyValue(new VagaCreateDto("G-28", "LIVRE"))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectHeader().exists(HttpHeaders.LOCATION);
@@ -100,6 +103,7 @@ public class VagaIT {
         VagaResponseDto responseBody = testClient
                 .get()
                 .uri("/api/v1/vagas/A-56")
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()

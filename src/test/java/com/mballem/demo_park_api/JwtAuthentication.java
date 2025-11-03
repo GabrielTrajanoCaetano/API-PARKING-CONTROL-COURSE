@@ -3,6 +3,7 @@ package com.mballem.demo_park_api;
 import com.mballem.demo_park_api.jwt.JwtToken;
 import com.mballem.demo_park_api.web.dto.UsuarioLoginDto;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.function.Consumer;
@@ -13,6 +14,8 @@ public class JwtAuthentication {
         String token = client
                 .post()
                 .uri("/api/v1/auth")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioLoginDto(username, password))
                 .exchange()
                 .expectStatus().isOk()

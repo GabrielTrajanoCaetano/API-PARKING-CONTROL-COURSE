@@ -2,7 +2,9 @@ package com.mballem.demo_park_api.web.exception;
 
 import com.mballem.demo_park_api.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +15,33 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
+@RequiredArgsConstructor
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
+    private final MessageSource messageSource;
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> EntityNotFoundException(EntityNotFoundException ex,
+                                                                HttpServletRequest request){
+        Object[] params = new Object[]{ex.getRecurso(), ex.getCodigo()};
+        String message = messageSource.getMessage("exception.EntityNotFoundException", params, request.getLocale());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, message));
+    }
+
+    @ExceptionHandler(CodigoUniqueViolationException.class)
+    public ResponseEntity<ErrorMessage> accessDeniedException(CodigoUniqueViolationException ex,
+                                                              HttpServletRequest request){
+        Object[] params = new Object[]{ex.getRecurso(), ex.getCodigo()};
+        String message = messageSource.getMessage("exception.codigoUniqueViolationException", params, request.getLocale());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, message));
+    }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorMessage> accessDeniedException(AccessDeniedException ex,
@@ -34,7 +61,7 @@ public class ApiExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request,HttpStatus.UNPROCESSABLE_ENTITY, "Campo(s) invalidos",result ));
+                .body(new ErrorMessage(request,HttpStatus.UNPROCESSABLE_ENTITY, messageSource.getMessage("message.invalid.field", null, request.getLocale()),result, messageSource ));
     }
 
     @ExceptionHandler(Exception.class)
@@ -67,24 +94,15 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
     }
 
-    @ExceptionHandler(CodigoUniqueViolationException.class)
-    public ResponseEntity<ErrorMessage> CodigoUniqueViolationException(CodigoUniqueViolationException ex,
-                                                                        HttpServletRequest request){
-        log.error("Api error - ");
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
-    }
 
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorMessage> EntityNotFoundException(EntityNotFoundException ex,
+    @ExceptionHandler(VagaDisponivelException.class)
+    public ResponseEntity<ErrorMessage> VagaDisponivelException(VagaDisponivelException ex,
                                                                 HttpServletRequest request){
         log.error("Api error - {}: {}", ex.getClass().getSimpleName(), ex.getMessage());
-                return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
     }
 
     @ExceptionHandler(PasswordInvalidException.class)

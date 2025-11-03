@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
 
 
-
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "/sql/usuarios/usuarios-insert.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = "/sql/usuarios/usuarios-delete.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
@@ -29,6 +30,7 @@ public class UsuarioIT {
                 .post()
                 .uri("/api/v1/usuarios")
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioCreateDto("tody@email.com", "123456"))
                 .exchange()
                 .expectStatus().isCreated()
@@ -151,6 +153,7 @@ public class UsuarioIT {
         UsuarioResponseDto responseBody = testClient
                 .get()
                 .uri("/api/v1/usuarios/100")
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
@@ -165,6 +168,7 @@ public class UsuarioIT {
         responseBody = testClient
                 .get()
                 .uri("/api/v1/usuarios/101")
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
@@ -179,6 +183,7 @@ public class UsuarioIT {
          responseBody = testClient
                 .get()
                 .uri("/api/v1/usuarios/101")
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
                 .exchange()
                 .expectStatus().isOk()
@@ -281,9 +286,10 @@ public class UsuarioIT {
     public void editarSenha_ComCamposInvalidos_retornarErrorMessageComStatus422(){
         ErrorMessage responseBody = testClient
                 .patch()
-                .uri("/api/v1/usuarios/100")
-                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDto("", "", ""))
                 .exchange()
                 .expectStatus().isEqualTo(422)
@@ -295,9 +301,10 @@ public class UsuarioIT {
 
         responseBody = testClient
                 .patch()
-                .uri("/api/v1/usuarios/100")
-                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .uri("/api/v1/usuarios/101")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDto("12345", "45678","45678"))
                 .exchange()
                 .expectStatus().isEqualTo(422)
@@ -309,9 +316,10 @@ public class UsuarioIT {
 
         responseBody = testClient
                 .patch()
-                .uri("/api/v1/usuarios/100")
+                .uri("/api/v1/usuarios/101")
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bia@email.com", "123456"))
                 .bodyValue(new UsuarioSenhaDto("1234567","1234567","1234567"))
                 .exchange()
                 .expectStatus().isEqualTo(422)
@@ -328,6 +336,7 @@ public class UsuarioIT {
         ErrorMessage responseBody = testClient
                 .patch()
                 .uri("/api/v1/usuarios/100")
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDto("123456","456789","000000"))
@@ -345,6 +354,7 @@ public class UsuarioIT {
                 .uri("/api/v1/usuarios/100")
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDto("123456", "000000", "456789"))
                 .exchange()
                 .expectStatus().isEqualTo(400)
@@ -359,6 +369,7 @@ public class UsuarioIT {
                 .uri("/api/v1/usuarios/100")
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(new UsuarioSenhaDto("000000", "456789","456789"))
                 .exchange()
                 .expectStatus().isEqualTo(400)
@@ -374,6 +385,7 @@ public class UsuarioIT {
         List<UsuarioResponseDto> responseBody = testClient
                 .get()
                 .uri("/api/v1/usuarios")
+                .accept(MediaType.APPLICATION_JSON)
                 .headers(JwtAuthentication.getHeaderAuthorization(testClient, "ana@email.com", "123456"))
                 .exchange()
                 .expectStatus().isEqualTo(200)
